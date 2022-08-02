@@ -115,8 +115,12 @@ class UnalignedDataset(Dataset):
               A_img = self.augmentation(A_img)
         A_img = np.array(A_img, dtype=np.uint8)
 
+        A_img = cv2.cvtColor(A_img, cv2.COLOR_BGR2RGB)
+        B_img = cv2.cvtColor(B_img, cv2.COLOR_BGR2RGB)
+
         A = self.transform(A_img)
         B = self.transform(B_img)
+        print('A: {}, B: {}'.format(A.shape, B.shape))
 
         return {'A': A, 'B': B, 'A_paths': A_path, 'B_paths': B_path}
     

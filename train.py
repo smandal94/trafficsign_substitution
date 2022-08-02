@@ -102,6 +102,7 @@ def main():
                         # accelerator='ddp',
                         # plugins=DDPPlugin(find_unused_parameters=False),
                         logger=wandb_logger,
+                        # logger=None,
                         max_epochs=opt.n_epochs,
                         checkpoint_callback=ckpt_callback,
                         deterministic=False,
