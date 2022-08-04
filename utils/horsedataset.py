@@ -31,7 +31,7 @@ class UnalignedDataset(Dataset):
         # print('A: ', self.dir_A)
         # print('B: ', self.dir_B)
 
-        self.A_paths = sorted(glob.glob(self.dir_A + '/*/*.ppm'))
+        self.A_paths = sorted(glob.glob(self.dir_A + '/*.jpg'))
         to_remove = []
         
         # Horn used only 128x128 or above images, discared all small ones
@@ -45,10 +45,11 @@ class UnalignedDataset(Dataset):
             del self.A_paths[i]
         print('Orginal: {}, removed: {}, trainable: {}'.format(org_sz, len(to_remove), len(self.A_paths)))
 
-        self.A_classes = sorted(glob.glob(self.dir_A + '/*'))
-        self.A_classes = [x.split('/')[-1] for x in self.A_classes]
+        # self.A_classes = sorted(glob.glob(self.dir_A + '/*'))
+        # self.A_classes = [x.split('/')[-1] for x in self.A_classes]
+        self.A_classes = 1
 
-        self.B_paths = sorted(glob.glob(self.dir_B + '/*.png'))
+        self.B_paths = sorted(glob.glob(self.dir_B + '/*.jpg'))
         self.A_size = len(self.A_paths)  # get the size of dataset A
         self.B_size = len(self.B_paths)  # get the size of dataset B
 
@@ -109,24 +110,24 @@ class UnalignedDataset(Dataset):
         B_path = self.B_paths[idx_B]
 
         A_img = cv2.imread(A_path, 1)
-        A_img_label = torch.tensor(self.A_classes.index(A_path.split('/')[-2]))
-        A_img = cv2.resize(A_img, (self.opt.img_size, self.opt.img_size), None, interpolation=cv2.INTER_AREA)
+        A_img_label = torch.tensor(self.A_classes)
+        A_img = cv2.resize(A_img, (self.opt.img_size, self.opt.img_size), None, interpolation=cv2.INTER_CUBIC)
 
-        B_img = cv2.imread(B_path, -1)
-        fg = B_img[:,:,:-1]
-        alpha = cv2.cvtColor(B_img[:,:,-1], cv2.COLOR_GRAY2RGB)
-        color = tuple(np.random.choice(range(255),size=3))
-        bg = np.zeros((B_img.shape[0], B_img.shape[1], 3), np.uint8)
-        bg[:] = color
-        fg = fg.astype(float) / 255.0
-        bg = bg.astype(float) / 255.0
-        alpha = alpha.astype(float) / 255.0
-        fg = cv2.multiply(alpha, fg)
-        bg = cv2.multiply(1.0 - alpha, bg)
-        B_img = cv2.add(fg, bg)
-        B_img = B_img * 255.0
-        B_img = B_img.astype(np.uint8)
-        B_img = cv2.resize(B_img, (self.opt.img_size, self.opt.img_size), None, interpolation=cv2.INTER_AREA)
+        B_img = cv2.imread(B_path, 1)
+        B_img = cv2.resize(B_img, (self.opt.img_size, self.opt.img_size), None, interpolation=cv2.INTER_CUBIC)
+        # fg = B_img[:,:,:-1]
+        # alpha = cv2.cvtColor(B_img[:,:,-1], cv2.COLOR_GRAY2RGB)
+        # color = tuple(np.random.choice(range(255),size=3))
+        # bg = np.zeros((self.opt.img_size, self.opt.img_size, 3), np.uint8)
+        # bg[:] = color
+        # fg = fg.astype(float) / 255.0
+        # bg = bg.astype(float) / 255.0
+        # alpha = alpha.astype(float) / 255.0
+        # fg = cv2.multiply(alpha, fg)
+        # bg = cv2.multiply(1.0 - alpha, bg)
+        # B_img = cv2.add(fg, bg)
+        # B_img = B_img * 255.0
+        # B_img = B_img.astype(np.uint8)
 
         # if self.augmentation is not None:
         #     chance = random.randint(0, 4)
@@ -136,9 +137,9 @@ class UnalignedDataset(Dataset):
 
         # A_img = cv2.cvtColor(A_img, cv2.COLOR_BGR2RGB)
         # B_img = cv2.cvtColor(B_img, cv2.COLOR_BGR2RGB)
+
         # A = self.transform(A_img)
         # B = self.transform(B_img)
-        # print('A: {}, B: {}'.format(A.shape, B.shape))
 
         A_img = A_img.astype(np.float32) / 255.0
         A_img = A_img[:,:,::-1]
@@ -150,15 +151,11 @@ class UnalignedDataset(Dataset):
         B_img -= [0.5, 0.5, 0.5]
         B_img /= [0.5, 0.5, 0.5]
 
+        # print('A: {}, B: {}'.format(A.shape, B.shape))
+
         return {'A': A_img, 'B': B_img, 'A_paths': A_path, 'B_paths': B_path, 'A_labels': A_img_label}
     
     def collate(self, batch):
-        # input_A = [b['A'] for b in batch]
-        # input_A = torch.stack(input_A).transpose([0,3,1,2])
-
-        # input_B = [b['B'] for b in batch]
-        # input_B = torch.stack(input_B).transpose([0,3,1,2])
-
         input_A = [b['A'] for b in batch]
         input_A = np.array(input_A, dtype=np.float32).transpose([0,3,1,2])
         input_A = torch.from_numpy(input_A)

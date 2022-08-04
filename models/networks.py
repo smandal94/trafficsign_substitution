@@ -146,7 +146,9 @@ def define_G(input_nc, output_nc, ngf, netG, norm='batch', use_dropout=False, in
     net = None
     norm_layer = get_norm_layer(norm_type=norm)
 
-    if netG == 'resnet_9blocks':
+    if netG == 'resnet_12blocks':
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=12)
+    elif netG == 'resnet_9blocks':
         net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
     elif netG == 'resnet_6blocks':
         net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=6)
@@ -275,7 +277,7 @@ class GANLoss(nn.Module):
         return loss
 
 
-def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', constant=1.0, lambda_gp=10.0):
+def _cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', constant=1.0, lambda_gp=10.0):
     """Calculate the gradient penalty loss, used in WGAN-GP paper https://arxiv.org/abs/1704.00028
 
     Arguments:
@@ -310,6 +312,26 @@ def cal_gradient_penalty(netD, real_data, fake_data, device, type='mixed', const
         return gradient_penalty, gradients
     else:
         return 0.0, None
+
+def calc_gradient_penalty(netD, real_data, fake_data, lambda_gp=10.0):
+    #print real_data.size()
+    BATCH_SIZE = real_data.size(0)
+    alpha = torch.rand(BATCH_SIZE, 1)
+    alpha = alpha.expand(real_data.size())
+    alpha = alpha.cuda(gpu) if use_cuda else alpha
+
+    interpolates = alpha * real_data + ((1 - alpha) * fake_data)
+
+    interpolates = autograd.Variable(interpolates, requires_grad=True)
+
+    disc_interpolates = netD(interpolates)
+
+    gradients = autograd.grad(outputs=disc_interpolates, inputs=interpolates,
+                              grad_outputs=torch.ones(disc_interpolates.size()),
+                              create_graph=True, retain_graph=True, only_inputs=True)[0]
+
+    gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * lambda_gp
+    return gradient_penalty
 
 
 class ResnetGenerator(nn.Module):
