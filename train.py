@@ -16,8 +16,8 @@ from torchvision.transforms import Compose
 import pytorch_lightning as pl
 
 import argparse
-import wandb
-from pytorch_lightning.loggers import WandbLogger
+# import wandb
+# from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.plugins import DDPPlugin
 from utils.utils import ToTensor, Normalize
 
@@ -29,7 +29,7 @@ from pl_cyclegan import CycleGANPL
 # cudnn.benckmark = True
 # cudnn.deterministic = True
 # device = torch.device('cuda:0')
-os.environ['CUDA_LAUNCH_BLOCKING'] = "0"
+# os.environ['CUDA_LAUNCH_BLOCKING'] = "0"
 
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser()
@@ -46,7 +46,7 @@ parser.add_argument('--norm', type=str, default='batch', help='instance normaliz
 parser.add_argument('--init_type', type=str, default='normal', help='network initialization [normal | xavier | kaiming | orthogonal]')
 parser.add_argument('--init_gain', type=float, default=0.02, help='scaling factor for normal, xavier and orthogonal.')
 parser.add_argument('--no_dropout', action='store_true', help='no dropout for the generator')
-parser.add_argument('--n_epochs_decay', type=int, default=300, help='number of epochs to linearly decay learning rate to zero')
+parser.add_argument('--n_epochs_decay', type=int, default=500, help='number of epochs to linearly decay learning rate to zero')
 parser.add_argument('--beta1', type=float, default=0.5, help='momentum term of adam')
 parser.add_argument('--lr', type=float, default=0.001, help='initial learning rate for adam')
 parser.add_argument('--lambda_A', type=float, default=10.0, help='weight for cycle loss (A -> B -> A)')
@@ -57,12 +57,14 @@ parser.add_argument('--pool_size', type=int, default=50, help='the size of image
 parser.add_argument('--lr_policy', type=str, default='cosine', help='learning rate policy. [linear | step | plateau | cosine]')
 parser.add_argument('--lr_decay_iters', type=int, default=50, help='multiply by a gamma every lr_decay_iters iterations')
 parser.add_argument('--epoch_count', type=int, default=1, help='the starting epoch count, we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>, ...')
-parser.add_argument('--dataroot', type=str, default='../trafficsign_substitution_temp/sign_data', help='path to dataset')
+parser.add_argument('--dataroot', type=str, default='../extras/sign_data', help='path to dataset')
+parser.add_argument('--momentsA', type=str, default='../extras/gtsrb128_inception_moments.npz', help='path to data A moments for FID')
+parser.add_argument('--momentsB', type=str, default='../extras/B_inception_moments.npz', help='path to data A moments for FID')
 # parser.add_argument('--dataroot', type=str, default='../cyclegan/datasets/horse2zebra_actual', help='path to dataset')
-parser.add_argument('--img_size', type=int, default=128, help='image size')
-parser.add_argument('--batch_size', type=int, default=8, help='image size')
-parser.add_argument('--num_workers', type=int, default=10, help='image size')
-parser.add_argument("--n_epochs", type=int, default=300, help='Number of epochs to run')
+parser.add_argument('--img_size', type=int, default=64, help='image size')
+parser.add_argument('--batch_size', type=int, default=64, help='image size')
+parser.add_argument('--num_workers', type=int, default=32, help='image size')
+parser.add_argument("--n_epochs", type=int, default=500, help='Number of epochs to run')
 parser.add_argument("--resume_path", type=str, default=None, help='Checkpoint to resume')
 parser.add_argument("--grad_accum", type=int, default=64, help='Gradient Accumulation to increase effective batchsize')
 opt = parser.parse_args()
@@ -95,22 +97,22 @@ def main():
     print('Model: ', model)
     model.check_params()
 
-    wandb.login()
-    wandb_logger = WandbLogger(project="TrafficSign", group="CycleGAN_UNet128", config=opt)
+    # wandb.login()
+    # wandb_logger = WandbLogger(project="TrafficSign", group="CycleGAN_UNet128", config=opt)
 
     trainer = pl.Trainer(precision=32, 
-                        benchmark=True,
-                        gpus=-1,
-                        # accelerator='ddp',
-                        # plugins=DDPPlugin(find_unused_parameters=False),
-                        logger=wandb_logger,
-                        # logger=None,
+                        # benchmark=True,
+                        # gpus=-1,
+                        accelerator='tpu',
+                        devices=8,
+                        # logger=wandb_logger,
+                        logger=None,
                         max_epochs=opt.n_epochs,
                         enable_checkpointing=ckpt_callback,
                         deterministic=False,
                         track_grad_norm=True,
                         resume_from_checkpoint=opt.resume_path,
-                        accumulate_grad_batches=opt.grad_accum//opt.batch_size,
+                        # accumulate_grad_batches=opt.grad_accum//opt.batch_size,
                         log_every_n_steps=1,
                         num_sanity_val_steps=0
                         )

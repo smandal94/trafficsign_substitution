@@ -104,41 +104,47 @@ class UnalignedDataset(Dataset):
         return max(self.A_size, self.B_size)
 
     def __getitem__(self, idx):
-        A_path = self.A_paths[idx % self.A_size]  # make sure index is within then range
-        idx_B = random.randint(0, self.B_size - 1)
-        B_path = self.B_paths[idx_B]
+        # A_path = self.A_paths[idx % self.A_size]  # make sure index is within then range
+        # idx_B = random.randint(0, self.B_size - 1)
+        # B_path = self.B_paths[idx_B]
 
-        A_img = cv2.imread(A_path, 1)
-        A_img_label = torch.tensor(self.A_classes.index(A_path.split('/')[-2]))
-        A_img = cv2.resize(A_img, (self.opt.img_size, self.opt.img_size), None, interpolation=cv2.INTER_AREA)
+        # A_img = cv2.imread(A_path, 1)
+        # A_img_label = torch.tensor(self.A_classes.index(A_path.split('/')[-2]))
+        # A_img = cv2.resize(A_img, (self.opt.img_size, self.opt.img_size), None, interpolation=cv2.INTER_AREA)
 
-        B_img = cv2.imread(B_path, -1)
-        fg = B_img[:,:,:-1]
-        alpha = cv2.cvtColor(B_img[:,:,-1], cv2.COLOR_GRAY2RGB)
-        color = tuple(np.random.choice(range(255),size=3))
-        bg = np.zeros((B_img.shape[0], B_img.shape[1], 3), np.uint8)
-        bg[:] = color
-        fg = fg.astype(float) / 255.0
-        bg = bg.astype(float) / 255.0
-        alpha = alpha.astype(float) / 255.0
-        fg = cv2.multiply(alpha, fg)
-        bg = cv2.multiply(1.0 - alpha, bg)
-        B_img = cv2.add(fg, bg)
-        B_img = B_img * 255.0
-        B_img = B_img.astype(np.uint8)
-        B_img = cv2.resize(B_img, (self.opt.img_size, self.opt.img_size), None, interpolation=cv2.INTER_AREA)
+        # B_img = cv2.imread(B_path, -1)
+        # fg = B_img[:,:,:-1]
+        # alpha = cv2.cvtColor(B_img[:,:,-1], cv2.COLOR_GRAY2RGB)
+        # color = tuple(np.random.choice(range(255),size=3))
+        # bg = np.zeros((B_img.shape[0], B_img.shape[1], 3), np.uint8)
+        # bg[:] = color
+        # fg = fg.astype(float) / 255.0
+        # bg = bg.astype(float) / 255.0
+        # alpha = alpha.astype(float) / 255.0
+        # fg = cv2.multiply(alpha, fg)
+        # bg = cv2.multiply(1.0 - alpha, bg)
+        # B_img = cv2.add(fg, bg)
+        # B_img = B_img * 255.0
+        # B_img = B_img.astype(np.uint8)
+        # B_img = cv2.resize(B_img, (self.opt.img_size, self.opt.img_size), None, interpolation=cv2.INTER_AREA)
 
+	## Dont remove comment
         # if self.augmentation is not None:
         #     chance = random.randint(0, 4)
         #     if chance == 1:
         #       A_img = self.augmentation(A_img)
         # A_img = np.array(A_img, dtype=np.uint8)
 
+	## Dont remove comment
         # A_img = cv2.cvtColor(A_img, cv2.COLOR_BGR2RGB)
         # B_img = cv2.cvtColor(B_img, cv2.COLOR_BGR2RGB)
         # A = self.transform(A_img)
         # B = self.transform(B_img)
         # print('A: {}, B: {}'.format(A.shape, B.shape))
+
+	## Remove
+	A_img = np.zeros((self.opt.img_size, self.opt.img_size, 3))
+	B_img = np.zeros((self.opt.img_size, self.opt.img_size, 3))
 
         A_img = A_img.astype(np.float32) / 255.0
         A_img = A_img[:,:,::-1]

@@ -64,10 +64,10 @@ class CycleGANPL(pl.LightningModule):
 
         # FID & IS
         self.ISmodel = iu.load_inception_net()
-        self.data_mu_A = np.load('gtsrb128_inception_moments.npz')['mu']
-        self.data_sigma_A = np.load('gtsrb128_inception_moments.npz')['sigma']
-        self.data_mu_B = np.load('B_inception_moments.npz')['mu']
-        self.data_sigma_B = np.load('B_inception_moments.npz')['sigma']
+        self.data_mu_A = np.load(opt.momentsA)['mu']
+        self.data_sigma_A = np.load(opt.momentsA)['sigma']
+        self.data_mu_B = np.load(opt.momentsB)['mu']
+        self.data_sigma_B = np.load(opt.momentsB)['sigma']
         self.pool_A, self.logits_A = [], []
         self.pool_B, self.logits_B = [], []
 
@@ -211,19 +211,19 @@ class CycleGANPL(pl.LightningModule):
             # self.manual_backward(loss_G)
             # g_opt.step()       # update G_A and G_B's weights
 
-            self.tr_loss_idt_A.update(loss_idt_A.item(), len(self.real_A))
-            self.tr_loss_idt_B.update(loss_idt_B.item(), len(self.real_A))
-            self.tr_loss_G_A.update(loss_G_A.item(), len(self.real_A))
-            self.tr_loss_G_B.update(loss_G_B.item(), len(self.real_A))
-            self.tr_loss_cycle_A.update(loss_cycle_A.item(), len(self.real_A))
-            self.tr_loss_cycle_B.update(loss_cycle_B.item(), len(self.real_A))
+            # self.tr_loss_idt_A.update(loss_idt_A.item(), len(self.real_A))
+            # self.tr_loss_idt_B.update(loss_idt_B.item(), len(self.real_A))
+            # self.tr_loss_G_A.update(loss_G_A.item(), len(self.real_A))
+            # self.tr_loss_G_B.update(loss_G_B.item(), len(self.real_A))
+            # self.tr_loss_cycle_A.update(loss_cycle_A.item(), len(self.real_A))
+            # self.tr_loss_cycle_B.update(loss_cycle_B.item(), len(self.real_A))
             self.tr_loss_G.update(loss_G.item(), len(self.real_A))
 
-            self.log('train/loss_G_step', self.tr_loss_G.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
-            self.log('train/loss_idt_A_step', self.tr_loss_idt_A.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
-            self.log('train/loss_idt_B_step', self.tr_loss_idt_B.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
-            self.log('train/loss_G_A_step', self.tr_loss_G_A.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
-            self.log('train/loss_G_B_step', self.tr_loss_G_B.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
+            self.log('train/loss_G_step', self.tr_loss_G.avg, on_step=True, on_epoch=False, prog_bar=True, logger=False)
+            # self.log('train/loss_idt_A_step', self.tr_loss_idt_A.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
+            # self.log('train/loss_idt_B_step', self.tr_loss_idt_B.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
+            # self.log('train/loss_G_A_step', self.tr_loss_G_A.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
+            # self.log('train/loss_G_B_step', self.tr_loss_G_B.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
             return {'loss': loss_G}
         else:
             ##########################
@@ -247,12 +247,12 @@ class CycleGANPL(pl.LightningModule):
             loss_D = loss_D_A + loss_D_B
 
             self.tr_loss_D.update(loss_D.item(), len(self.real_A))
-            self.tr_loss_D_A.update(loss_D_A.item(), len(self.real_A))
-            self.tr_loss_D_B.update(loss_D_B.item(), len(self.real_A))
+            # self.tr_loss_D_A.update(loss_D_A.item(), len(self.real_A))
+            # self.tr_loss_D_B.update(loss_D_B.item(), len(self.real_A))
 
-            self.log('train/loss_D_step', self.tr_loss_D.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
-            self.log('train/loss_D_A_step', self.tr_loss_D_A.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
-            self.log('train/loss_D_B_step', self.tr_loss_D_B.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
+            self.log('train/loss_D_step', self.tr_loss_D.avg, on_step=True, on_epoch=False, prog_bar=True, logger=False)
+            # self.log('train/loss_D_A_step', self.tr_loss_D_A.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
+            # self.log('train/loss_D_B_step', self.tr_loss_D_B.avg, on_step=True, on_epoch=False, prog_bar=False, logger=True)
 
             return {'loss': loss_D}
     
@@ -260,8 +260,8 @@ class CycleGANPL(pl.LightningModule):
         avg_G_loss = self.tr_loss_G.avg
         avg_D_loss = self.tr_loss_D.avg
 
-        self.log('train/loss_G', avg_G_loss, on_step=False, on_epoch=True, prog_bar=False, logger=True)
-        self.log('train/loss_D', avg_D_loss, on_step=False, on_epoch=True, prog_bar=False, logger=True)
+        self.log('train/loss_G', avg_G_loss, on_step=False, on_epoch=True, prog_bar=True, logger=False)
+        self.log('train/loss_D', avg_D_loss, on_step=False, on_epoch=True, prog_bar=True, logger=False)
 
         self.tr_loss_idt_A.reset()
         self.tr_loss_idt_B.reset()
@@ -302,7 +302,7 @@ class CycleGANPL(pl.LightningModule):
         FID_A = iu.numpy_calculate_frechet_distance(mu.cpu().numpy(), sigma.cpu().numpy(), self.data_mu_A, self.data_sigma_A)
         # print('fida: ', FID_A)
         if not np.isnan(FID_A):
-            self.log('val/FID_A', FID_A, on_step=False, on_epoch=True, prog_bar=False, logger=True)
+            self.log('val/FID_A', FID_A, on_step=False, on_epoch=True, prog_bar=True, logger=False)
 
         self.pool_B = torch.cat(self.pool_B, 0)
         self.logits_B = torch.cat(self.logits_B, 0)
@@ -312,7 +312,7 @@ class CycleGANPL(pl.LightningModule):
 
         # print('fidb: ', FID_B)
         if not np.isnan(FID_B):
-            self.log('val/FID_B', FID_B, on_step=False, on_epoch=True, prog_bar=False, logger=True)
+            self.log('val/FID_B', FID_B, on_step=False, on_epoch=True, prog_bar=True, logger=False)
 
         self.fake_B = self.netG_A(self.cache_A)                # G_A(A)
         self.fake_B = torch.cat([self.cache_A, self.fake_B], dim=0)
@@ -340,7 +340,7 @@ class CycleGANPL(pl.LightningModule):
         plt.imshow(joined_images_B)
         plt.axis('off')
         plt.title(f'Epoch {self.current_epoch} A->B')
-        plt.savefig('train_figs/A2B/A2B.png', bbox_inches='tight')
+        plt.savefig('train_figs/A2B/A2B_epoch{:03d}.png'.format(self.current_epoch), bbox_inches='tight')
 
         self.fake_A = self.netG_B(self.cache_B)                # G_B(B)
         self.fake_A = torch.cat([self.cache_B, self.fake_A], dim=0)
@@ -357,7 +357,7 @@ class CycleGANPL(pl.LightningModule):
         plt.imshow(joined_images_A)
         plt.axis('off')
         plt.title(f'Epoch {self.current_epoch} B->A')
-        plt.savefig('train_figs/B2A/B2A.png', bbox_inches='tight')
+        plt.savefig('train_figs/B2A/B2A_epoch{:03d}.png'.format(self.current_epoch), bbox_inches='tight')
 
         # self.log('A->B', joined_images_B, on_step=False, on_epoch=True, prog_bar=False, logger=True) 
         # self.log('B->A', joined_images_A, on_step=False, on_epoch=True, prog_bar=False, logger=True)
