@@ -26,10 +26,10 @@ def resize_with_padding(im, desired_size=640):
     return Image.fromarray(new_im)
 
 def make_gif(frame_folder, extn, cutoff = 420):
-    frames = [Image.open(image) for image in glob.glob("{}/*{}".format(frame_folder, extn))]
-    # frames = [resize_with_padding(np.array(image)) for image in frames]
+    frames = [cv2.imread(image, 1)[:,:,::-1] for image in glob.glob("{}/*{}".format(frame_folder, extn))]
+    frames = [resize_with_padding(np.array(image)) for image in frames]
     frame_one = frames[0]
-    frame_one.save("../examples/substitution.gif", format="GIF", append_images=frames,
+    frame_one.save("../examples/four_corner_err.gif", format="GIF", append_images=frames,
                save_all=True, duration=1000, loop=0)
 
 def main():
@@ -67,7 +67,7 @@ def main():
     #         print(f)
 
     # create gif
-    make_gif("../results/substitution", extn='.png', cutoff=420)
+    make_gif("../results/orb", extn='.png', cutoff=420)
 
 
 if __name__ == '__main__':
