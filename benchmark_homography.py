@@ -512,14 +512,14 @@ def bm_orb(black=True):
                 misses += 1
                 print('corner_err: {}, matches: {}'.format(corner_err, len(dmatches)))
 
-            cv2.imshow('asd', np.hstack((img3_bgra, img2_bgra_pred)))
-            key = cv2.waitKey(0)
-            if key == 27:
-                cv2.destroyAllWindows()
-                exit()
-            elif key == ord('s'):
-                spath = './results/orb/{}'.format(f_img1.split('/')[-1])
-                cv2.imwrite(spath, np.hstack((img3_bgra, img2_bgra_pred)))
+            # cv2.imshow('asd', np.hstack((img3_bgra, img2_bgra_pred)))
+            # key = cv2.waitKey(0)
+            # if key == 27:
+            #     cv2.destroyAllWindows()
+            #     exit()
+            # elif key == ord('s'):
+            #     spath = './results/orb/{}'.format(f_img1.split('/')[-1])
+            #     cv2.imwrite(spath, np.hstack((img3_bgra, img2_bgra_pred)))
         else:
             misses += 1
         
@@ -876,7 +876,7 @@ def main():
     # 2. Benchmark SIFT
     # bm_sift()
     # 3. Benchmark ORB
-    bm_orb()
+    # bm_orb()
     # 4. Benchmark AKAZE
     # bm_akaze()
     # 5. Benchmark BRISK
@@ -886,15 +886,15 @@ def main():
     
     # white background
     # 7. Benchmark SIFT
-    # bm_sift(black=False)
+    bm_sift(black=False)
     # 8. Benchmark ORB
-    # bm_orb(black=False)
+    bm_orb(black=False)
     # 9. Benchmark AKAZE
-    # bm_akaze(black=False)
+    bm_akaze(black=False)
     # 10. Benchmark BRISK
-    # bm_brisk(black=False)
+    bm_brisk(black=False)
     # 11. Benchmark Superpoint+SuperGlue
-    # bm_superglue(black=False)
+    bm_superglue(black=False)
 
 if __name__ == '__main__':
     main()

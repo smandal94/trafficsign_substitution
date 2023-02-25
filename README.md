@@ -1,4 +1,4 @@
-## Roadsign substitution
+## Traffic sign substitution via Homography
 
 ### Dataset
 
@@ -56,6 +56,7 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
 ### Results
 #### 1. Foreground Removal (Lama Inpainting)
 - GT vs inpainted (```results/lama```)
+- More samples can be found [here](https://drive.google.com/drive/folders/1QapycCJxz8XGpuhcYL1YLrnXeSOyBekP?usp=sharing)
 
 <p align="center">
   <img src="examples/lama.gif"/>
@@ -63,6 +64,7 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
 
 #### 2. Keypoint Detection+Matching (SuperPoint+SuperGlue)
 - Template to GT matching  (```results/superglue```)
+- More samples can be found [here](https://drive.google.com/drive/folders/1xjikDIGCxss-jcjo0quPyeCzSEVcIVH3?usp=sharing)
 
 <p align="center">
   <img src="examples/superglue.gif"/>
@@ -70,6 +72,7 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
 
 #### 3. Harmonization (RainNet)
 - Copy-Paste substitution vs Harmonized  (```results/rainnet```)
+- More samples can be found [here](https://drive.google.com/drive/folders/12bHSnuQIqnTO6ARbNNiWS-r9yb9x5U--?usp=sharing)
 
 <p align="center">
   <img src="examples/rainnet.gif"/>
@@ -77,6 +80,7 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
 
 #### 4. Final Substitution result
 - Original GT roadsigns vs substituted roadsigns (Inpaint+Homography+Harmonization)  (```results/substitution```)
+- More samples can be found [here](https://drive.google.com/drive/folders/1iOzQegPhS9PK_cpONQqq6uxdqkMP0iiy?usp=sharing)
 
 <p align="center">
   <img src="examples/substitution.gif"/>
