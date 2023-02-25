@@ -36,6 +36,10 @@ Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
 
 - Creates homography dataset with random geometric and photometric augmentations and saves the image pair and H_1_2 matrix
 - Uses Mean Average Corner Error from Deep Image Homography Estimation [paper](https://arxiv.org/pdf/1606.03798.pdf) for benchmarking on normalized homography gt-pred pair. Normalized image corners: ```[[-1, -1], [1, -1], [1, 1], [-1, 1]]```
+- In below examples, first img1, second img2, green lines are ORB matches, third is predicted transformation with green bbox H_1_2_gt four corners, and red bbox H_1_2_pred four corners.
+<p align="center">
+  <img src="examples/four_corner_err.gif"/>
+</p>
 
 #### Black Background
 1. SIFT+FLANN
@@ -51,21 +55,29 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
 
 ### Results
 #### 1. Foreground Removal (Lama Inpainting)
+- GT vs inpainted (```results/lama```)
+
 <p align="center">
   <img src="examples/lama.gif"/>
 </p>
 
 #### 2. Keypoint Detection+Matching (SuperPoint+SuperGlue)
+- Template to GT matching  (```results/superglue```)
+
 <p align="center">
   <img src="examples/superglue.gif"/>
 </p>
 
 #### 3. Harmonization (RainNet)
+- Copy-Paste substitution vs Harmonized  (```results/rainnet```)
+
 <p align="center">
   <img src="examples/rainnet.gif"/>
 </p>
 
 #### 4. Final Substitution result
+- Original GT roadsigns vs substituted roadsigns (Inpaint+Homography+Harmonization)  (```results/substitution```)
+
 <p align="center">
   <img src="examples/substitution.gif"/>
 </p>
@@ -80,16 +92,14 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
     doi={10.1109/TITS.2019.2913588}, 
     ISSN={1524-9050}
  }
-```
-```
+
 @article{suvorov2021resolution,
   title={Resolution-robust Large Mask Inpainting with Fourier Convolutions},
   author={Suvorov, Roman and Logacheva, Elizaveta and Mashikhin, Anton and Remizova, Anastasia and Ashukha, Arsenii and Silvestrov, Aleksei and Kong, Naejin and Goka, Harshith and Park, Kiwoong and Lempitsky, Victor},
   journal={arXiv preprint arXiv:2109.07161},
   year={2021}
 }
-```
-```
+
 @inproceedings{detone18superpoint,
   author    = {Daniel DeTone and
                Tomasz Malisiewicz and
@@ -99,8 +109,7 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
   year      = {2018},
   url       = {http://arxiv.org/abs/1712.07629}
 }
-```
-```
+
 @inproceedings{sarlin20superglue,
   author    = {Paul-Edouard Sarlin and
                Daniel DeTone and
@@ -111,8 +120,7 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
   year      = {2020},
   url       = {https://arxiv.org/abs/1911.11763}
 }
-```
-```
+
 @inproceedings{ling2021region,
   title={Region-aware Adaptive Instance Normalization for Image Harmonization},
   author={Ling, Jun and Xue, Han and Song, Li and Xie, Rong and Gu, Xiao},
