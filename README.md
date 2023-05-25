@@ -15,6 +15,12 @@ DFG Traffic Sign Data Set
   <img src="examples/DFG.gif"/>
 </p>
 
+### Pipeline
+
+<p align="center">
+  <img src="examples/pipeline.png"/>
+</p>
+
 ### Preparation
 Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
 1. Clone this repository, run ```conda env create -f environment.yml```
@@ -26,12 +32,13 @@ Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
 
 - Place DFG dataset images in ```examples/DFG```
 - Place foreground inpainted images in ```examples/inpainted``` (Look into ```src/create_lama_data.py``` and https://github.com/sayanxtreme/trafficsign_substitution/blob/lama/lama.ipynb)
-- The sign templates are placed in ```examples/templates``` which will be used for both homography and substitution
-- Run ```python main.py```
+- The sign templates are placed in ```examples/templates2``` which will be used for both homography and substitution
+- Run ```python main.py``` for substitution
+- Run ```python main_maskrcnn.py``` for substitution that also saves the new bbox and mask annotations
 
 ### Benchmark Homography
 
-1. First extrack roadsign crops using ```src/save2folder.py```
+1. First extract roadsign crops using ```src/save2folder.py```
 2. Change paths and run ```python benchmark_homography.py```
 
 - Creates homography dataset with random geometric and photometric augmentations and saves the image pair and H_1_2 matrix
@@ -41,22 +48,43 @@ Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
   <img src="examples/four_corner_err.gif"/>
 </p>
 
-#### Black Background
-1. SIFT+FLANN
-SIFT+FLANN MACE: 40.59996903319021, Miss: 1268, Average matches: 44.20534477365152
-2. ORB+BFMatcher
-ORB+BFMatcher MACE: 20.900715256738984, Miss: 232, Average matches: 151.73485172207504
-3. AKAZE+BFMatcher
-AKAZE+BFMatcher MACE: 78.53744543406565, Miss: 1634, Average matches: 44.842636363636366
-4. BRISK+BFMatcher
-BRISK+BFMatcher MACE: 108.60093818119128, Miss: 693, Average matches: 52.58415064731267
-5. SuperPoint+SuperGlue
-SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.00449419146952
+#### Black background
+#### 1920
+1. ORB+BFMatcher MACE: 24.70120317414624, Miss: 386, Average matches: 154.17790069138906
+2. AKAZE+BFMatcher MACE: 35.20640864155389, Miss: 2674, Average matches: 45.97548483474271
+3. BRISK+BFMatcher MACE: 35.86339756906804, Miss: 1174, Average matches: 53.67866211814194
+4. SuperPoint+SuperGlue MACE: 16.19845761880025, Miss: 106, Average matches: 51.03567594557484
+5. ORB-BFMatcher+SuperPoint-SuperGlue MACE: 10.820172100490437, Miss: 47, Average matches: 50.96477539013811
+
+#### 800
+1. ORB+BFMatcher MACE: 63.17131938102614, Miss: 766, Average matches: 66.90303337987054
+2. AKAZE+BFMatcher MACE: 114.18250320457729, Miss: 9453, Average matches: 17.51667317962746
+3. BRISK+BFMatcher MACE: 89.22819533970527, Miss: 2773, Average matches: 28.04025355729111
+4. SuperPoint+SuperGlue MACE: 99.18764054861977, Miss: 887, Average matches: 20.345648520649792
+5. ORB-BFMatcher+SuperPoint-SuperGlue MACE: 51.77292614950893, Miss: 118, Average matches: 20.004195489848414
+
+#### White background
+#### 1920
+1. ORB+BFMatcher MACE: 12.332896810792427, Miss: 32, Average matches: 162.9177153679384
+2. AKAZE+BFMatcher MACE: 23.889963308656203, Miss: 133, Average matches: 55.191790746477466
+3. BRISK+BFMatcher MACE: 44.15308806779322, Miss: 174, Average matches: 56.16417835796634
+4. SuperPoint+SuperGlue MACE: 16.050153812201053, Miss: 63, Average matches: 51.964337373435086
+5. ORB-BFMatcher+SuperPoint-SuperGlue MACE: 5.1721129948081135, Miss: 0, Average matches: 51.887527701003464
+
+#### 800
+1. ORB+BFMatcher MACE: 79.18184477307678, Miss: 97, Average matches: 68.50586561501598
+2. AKAZE+BFMatcher MACE: 87.32104194811052, Miss: 4080, Average matches: 21.933205842410132
+3. BRISK+BFMatcher MACE: 225.5694512458189, Miss: 895, Average matches: 27.763306677532725
+4. SuperPoint+SuperGlue MACE: 59.52518970416643, Miss: 1008, Average matches: 21.02901437948561
+5. ORB-BFMatcher+SuperPoint-SuperGlue MACE: 81.6209639032882, Miss: 2, Average matches: 20.571976393834507
 
 ### Results
 #### 1. Foreground Removal (Lama Inpainting)
 - GT vs inpainted (```results/lama```)
 - More samples can be found [here](https://drive.google.com/drive/folders/1QapycCJxz8XGpuhcYL1YLrnXeSOyBekP?usp=sharing)
+- LAMA vs OpenCV FFM LPIPS scores using this [code](https://github.com/richzhang/PerceptualSimilarity)\
+    LPIPS LAMA: 0.00745\
+    LPIPS OpenCV: 0.00770
 
 <p align="center">
   <img src="examples/lama.gif"/>
@@ -85,6 +113,75 @@ SuperPoint+SuperGlue MACE: 13.231284093363495, Miss: 48, Average matches: 51.004
 <p align="center">
   <img src="examples/substitution.gif"/>
 </p>
+
+### 5. MaskRCNN ResNet50 no_arbitrary classes, n_class=117, epoch=35 [weights_link](https://drive.google.com/file/d/1H6nU-L_yoD0XZdLl7KqnzH_VQfZNebB2/view?usp=sharing)
+
+- To remove arbitrary classes from groundtruth annotations, use ```src/create_custom.py```
+- To run substitution pipeline that saves substitution annotations, run ```python main_maskrcnn.py```
+- To train, test and run inference on MaskRCNN, check ```maskrcnn/README.md```
+- Test
+```
+IoU metric: bbox
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.732
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.836
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.819
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.303
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.824
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.894
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.776
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.789
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.789
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.415
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.873
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.909
+IoU metric: segm
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.743
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.834
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.810
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.288
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.842
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.943
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.788
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.800
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.800
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.408
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.890
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.947
+ ```
+- Test substitution
+```
+IoU metric: bbox
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.556
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.709
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.684
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.160
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.692
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.745
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.626
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.629
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.629
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.260
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.750
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.761
+IoU metric: segm
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.636
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.709
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.701
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.189
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.785
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.863
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.711
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.714
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.714
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.313
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.843
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.868
+```
+
+### Documentation
+
+- Report available at ```Traffic_Sign_Substitution_Report.pdf``` and [here](https://drive.google.com/file/d/1DW5-DInTQ4mtcpPo_3zQoucy47XTcYZE/view?usp=sharing)
+- Slides available at ```TrafficSign_substitution_slides.pdf``` and [here](https://drive.google.com/file/d/1dAuNSzZ99FyNALrdv4IU9HuRw7ce-Hk8/view?usp=sharing)
 
 ### Citation
 ```
