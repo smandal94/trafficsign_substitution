@@ -81,7 +81,6 @@ Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
 ### Results
 #### 1. Foreground Removal (Lama Inpainting)
 - GT vs inpainted (```results/lama```)
-- More samples can be found [here](https://drive.google.com/drive/folders/1QapycCJxz8XGpuhcYL1YLrnXeSOyBekP?usp=sharing)
 - LAMA vs OpenCV FFM LPIPS scores using this [code](https://github.com/richzhang/PerceptualSimilarity)\
     LPIPS LAMA: 0.00745\
     LPIPS OpenCV: 0.00770
@@ -92,7 +91,6 @@ Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
 
 #### 2. Keypoint Detection+Matching (SuperPoint+SuperGlue)
 - Template to GT matching  (```results/superglue```)
-- More samples can be found [here](https://drive.google.com/drive/folders/1xjikDIGCxss-jcjo0quPyeCzSEVcIVH3?usp=sharing)
 
 <p align="center">
   <img src="examples/superglue.gif"/>
@@ -100,7 +98,6 @@ Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
 
 #### 3. Harmonization (RainNet)
 - Copy-Paste substitution vs Harmonized  (```results/rainnet```)
-- More samples can be found [here](https://drive.google.com/drive/folders/12bHSnuQIqnTO6ARbNNiWS-r9yb9x5U--?usp=sharing)
 
 <p align="center">
   <img src="examples/rainnet.gif"/>
@@ -108,7 +105,6 @@ Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
 
 #### 4. Final Substitution result
 - Original GT roadsigns vs substituted roadsigns (Inpaint+Homography+Harmonization)  (```results/substitution```)
-- More samples can be found [here](https://drive.google.com/drive/folders/1iOzQegPhS9PK_cpONQqq6uxdqkMP0iiy?usp=sharing)
 
 <p align="center">
   <img src="examples/substitution.gif"/>
