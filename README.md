@@ -31,7 +31,7 @@ Tested on Ubuntu 22.04, GTX 1070, CUDA 11.7, Python 3.10
 ### Substitution
 
 - Place DFG dataset images in ```examples/DFG```
-- Place foreground inpainted images in ```examples/inpainted``` (Look into ```src/create_lama_data.py``` and https://github.com/sayanxtreme/trafficsign_substitution/blob/lama/lama.ipynb)
+- Place foreground inpainted images in ```examples/inpainted``` (Look into ```src/create_lama_data.py``` and [https://github.com/smandal94/trafficsign_substitution/blob/lama/lama.ipynb](https://github.com/smandal94/trafficsign_substitution/blob/lama/lama.ipynb))
 - The sign templates are placed in ```examples/templates2``` which will be used for both homography and substitution
 - Run ```python main.py``` for substitution
 - Run ```python main_maskrcnn.py``` for substitution that also saves the new bbox and mask annotations
